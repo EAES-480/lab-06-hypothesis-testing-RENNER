@@ -63,7 +63,7 @@ By the end of this lab, you should be able to:
 
 ## Load and inspect
 
-```{r load_data, echo=TRUE, eval=FALSE}
+```{r load_data, echo=TRUE, eval=TRUE}
 # GOAL: Read the dataset and clean the names.
 
 df <- read_csv("data/us-ams-simple.csv", na = c("-9999")) %>%
@@ -75,7 +75,7 @@ glimpse(df)
 
 ## Derive time columns (if needed)
 
-```{r derive_time, echo=TRUE, eval=FALSE}
+```{r derive_time, echo=TRUE, eval=TRUE}
 # GOAL: Create date / month / day_night columns as in earlier labs.
 
 df <- df %>%
@@ -96,7 +96,7 @@ Choose **one numeric variable** from the dataset.
 
 Possible examples: - `swc` - `ta` - `fc` - `gpp` - `le`
 
-```{r choose_variable, echo=TRUE, eval=FALSE}
+```{r choose_variable, echo=TRUE, eval=TRUE}
 target_var <- "le"
 
 # CHECK: does this variable exist?
@@ -130,15 +130,15 @@ Fill these in:
 
 > My claim is: `The annual mean latent heat flux is 100 W m$^{-2}$.`
 
-> $H_0: \mu = \mu_0$
+> $H_0: \mu = \mu_0$ - The annual mean latent heat flux is not significantly different from 100 W m$^{-2}$.
 
-> $H_A: \mu \neq \mu_0$
+> $H_A: \mu \neq \mu_0$ - The annual mean latent heat flux is significantly different from 100 W m$^{-2}$.
 
 ------------------------------------------------------------------------
 
 ## 4) Draw one sample and compute the sample mean
 
-```{r draw_sample, echo=TRUE, eval=FALSE}
+```{r draw_sample, echo=TRUE, eval=TRUE}
 # GOAL: Draw one random sample and compute its mean.
 
 set.seed(100)
@@ -163,7 +163,7 @@ sample_mean
 
 ## 5) Bootstrap the sample mean
 
-```{r bootstrap_means, echo=TRUE, eval=FALSE}
+```{r bootstrap_means, echo=TRUE, eval=TRUE}
 # GOAL: Bootstrap the sample mean to estimate uncertainty.
 
 set.seed(100)
@@ -180,7 +180,7 @@ head(boot_means)
 
 ## 6) Estimate uncertainty
 
-```{r bootstrap_summary, echo=TRUE, eval=FALSE}
+```{r bootstrap_summary, echo=TRUE, eval=TRUE}
 # GOAL: Compute the bootstrap SE and 95% CI.
 
 boot_se <- sd(boot_means)
@@ -204,7 +204,7 @@ tibble(
 
 Define the null value from your claim.
 
-```{r hypothesis_test, echo=TRUE, eval=FALSE}
+```{r hypothesis_test, echo=TRUE, eval=TRUE}
 # GOAL: Compute z and p-value for your claim.
 
 mu0 <- 100   # numeric claim value
@@ -249,7 +249,7 @@ Fill in:
 
 ## 9) Visualize the hypothesis test
 
-```{r plot_test, echo=TRUE, eval=FALSE}
+```{r plot_test, echo=TRUE, eval=TRUE}
 # GOAL: Plot the bootstrap distribution, sample mean, CI, and null value.
 
 ggplot(tibble(boot_mean = boot_means), aes(x = boot_mean)) +
@@ -276,7 +276,7 @@ ggplot(tibble(boot_mean = boot_means), aes(x = boot_mean)) +
 
 Keep the same variable, but test a **different null value**.
 
-```{r second_claim, echo=TRUE, eval=FALSE}
+```{r second_claim, echo=TRUE, eval=TRUE}
 # GOAL: Test a second claim using the same sample and bootstrap SE.
 
 mu0_alt <- 50
@@ -319,14 +319,14 @@ You will first work with a built-in grouping variable (**day vs night**), then c
 
 If you already created `day_night` earlier, you can reuse it. Otherwise, create it here.
 
-```{r make_daynight, echo=TRUE, eval=FALSE}
+```{r make_daynight, echo=TRUE, eval=TRUE}
 # GOAL: create a day/night grouping variable from `daytime`.
 
 df <- df %>%
   mutate(
-    day_night = if_else(___ == 1, "Day", "Night")
+    day_night = if_else(daytime == 1, "Day", "Night")
   ) %>% 
-  filter(!is.na(___))
+  filter(!is.na(day_night))
 
 df %>% count(day_night)
 ```
@@ -344,8 +344,8 @@ Possible examples:
 - `gpp`
 - `le`
 
-```{r choose_response_ttest, echo=TRUE, eval=FALSE}
-response_var <- "___"
+```{r choose_response_ttest, echo=TRUE, eval=TRUE}
+response_var <- "gpp"
 
 # CHECK: does this variable exist?
 response_var %in% names(df)
@@ -363,13 +363,14 @@ You may use:
 - `geom_jitter()`
 - or a combination
 
-```{r plot_daynight, echo=TRUE, eval=FALSE}
+```{r plot_daynight, echo=TRUE, eval=TRUE}
 # GOAL: visualize the response by day/night group.
 
 df %>%
   filter(!is.na(.data[[response_var]])) %>%
-  ggplot(aes(x = ___, y = ___, fill = ___)) +
-  geom_boxplot(alpha = 0.8) +
+  ggplot(aes(x = day_night, y = gpp, fill = day_night)) +
+  geom_violin(alpha = 0.8) +
+#  geom_boxplot(width=0.1, color="grey", alpha=0.2) + 
   theme_classic(base_size = 18) +
   labs(
     x = NULL,
@@ -389,16 +390,16 @@ Do the groups look different in center? In spread?
 
 Compute the group means, SDs, and sample sizes.
 
-```{r summarize_daynight, echo=TRUE, eval=FALSE}
+```{r summarize_daynight, echo=TRUE, eval=TRUE}
 # GOAL: summarize the response variable by day/night group.
 
 group_summary <- df %>%
   filter(!is.na(.data[[response_var]])) %>%
-  group_by(___) %>%
+  group_by(day_night) %>%
   summarise(
-    mean_response = ___,
-    sd_response = ___,
-    n = ___,
+    mean_response = mean(gpp),
+    sd_response = sd(gpp),
+    n = n(),
     .groups = "drop"
   )
 
@@ -418,11 +419,11 @@ Use this structure:
 
 Fill in:
 
-> My response variable is `___`
+> My response variable is `gpp`
 
-> $H_0$: `___`
+> $H_0$: `The average GPP does not significantly change between day and night in 2023 in Argonne Nat'l Laboratory`
 
-> $H_A$: `___`
+> $H_A$: `The average GPP changes significantly between day and night in 2023 in Argonne Nat'l Laboratory`
 
 ---
 
@@ -430,12 +431,12 @@ Fill in:
 
 Use `t.test()` to compare the means of your response variable between Day and Night.
 
-```{r ttest_daynight, echo=TRUE, eval=FALSE}
+```{r ttest_daynight, echo=TRUE, eval=TRUE}
 # GOAL: run a two-sample t-test by formula.
 
 t.test(
-  ___ ~ ___,
-  data = ___
+  gpp ~ day_night,
+  data = df
 )
 ```
 
@@ -443,20 +444,19 @@ t.test(
 Would you reject the null hypothesis at $\alpha = 0.05$?  
 What does the result imply about day vs night differences in your chosen variable?
 
-> *Write your answer here.*
-
+> *The p value is <0.01. The 95% CI is 10.91032 to 11.42790. I would reject the null hypothesis and instead state that the mean GPP at night and during the day at Argonne in '23 are significantly different.*
 ---
 
 ## 17) Connect the t-test to a confidence interval
 
 Extract the confidence interval and interpret it as a difference in means.
 
-```{r ttest_store, echo=TRUE, eval=FALSE}
+```{r ttest_store, echo=TRUE, eval=TRUE}
 # GOAL: store the t-test result in an object.
 
 tt_daynight <- t.test(
-  ___ ~ ___,
-  data = ___
+  gpp ~ day_night,
+  data = df
 )
 
 tt_daynight$conf.int
@@ -465,7 +465,7 @@ tt_daynight$conf.int
 **Prompt (2–3 sentences):** Does the confidence interval include 0?  
 How does that connect to the hypothesis test decision?
 
-> *Write your answer here.*
+> *The confidence interval does not include 0. A CI that contains 0 indicates that the result is not statistically signficant. We do not have this issue, which supports the hypothesis test results.*
 
 ---
 
@@ -473,19 +473,19 @@ How does that connect to the hypothesis test decision?
 
 Create bootstrap distributions of the **group means** for Day and Night separately.
 
-```{r bootstrap_group_means, echo=TRUE, eval=FALSE}
-set.seed(___)
+```{r bootstrap_group_means, echo=TRUE, eval=TRUE}
+set.seed(100)
 
-B <- ___   # e.g., 2000
+B <- 2000   # e.g., 2000
 
 x_day <- df %>%
   filter(day_night == "Day") %>%
-  pull(___) %>%
+  pull(gpp) %>%
   na.omit()
 
 x_night <- df %>%
   filter(day_night == "Night") %>%
-  pull(___) %>%
+  pull(gpp) %>%
   na.omit()
 
 boot_day <- replicate(
@@ -504,23 +504,27 @@ boot_groups <- bind_rows(
 )
 ```
 
-```{r plot_boot_groups, echo=TRUE, eval=FALSE}
+```{r plot_boot_groups, echo=TRUE, eval=TRUE}
 # GOAL: visualize the bootstrap distributions by group.
+library(ggbreak)
 
 ggplot(boot_groups, aes(x = mean_est, fill = group)) +
-  geom_histogram(alpha = 0.45, bins = ___, position = "identity") +
+  geom_histogram(alpha = 0.45, bins = 1000, position = "identity") +
   theme_classic(base_size = 18) +
   labs(
     x = paste0("Bootstrap mean of ", response_var),
     y = "Count",
-    title = "Bootstrap distributions of group means"
-  )
+    title = "Bootstrap distributions of group means", 
+    subtitle = "Discontinuous x-axis"
+  ) + 
+  scale_x_break(c(0.5, 10.5)) + 
+  theme(plot.subtitle = element_text(face = "italic"))
 ```
 
 **Prompt (3–4 sentences):** How does this bootstrap visualization help you understand the t-test result?  
 Do the plausible group means strongly overlap, or are they clearly separated?
 
-> *Write your answer here.*
+> *I appreciate visualizations in addition to statistical results; I think they're often critical to correct interpretation. There is no overlap. They're so clearly separated that I added in an x axis break so you could see the means. Without the axis break you couldn't see anything.*
 
 ---
 
@@ -538,20 +542,20 @@ You must:
 - define the grouping variable clearly
 - explain why the grouping is scientifically meaningful
 
-```{r choose_second_group, echo=TRUE, eval=FALSE}
+```{r choose_second_group, echo=TRUE, eval=TRUE}
 # GOAL: create your own two-level grouping variable.
 
 df <- df %>%
   mutate(
-    my_group = ___
+    temp = ifelse(ta < 1.66667, "cold", "warm")
   )
 
-df %>% count(my_group)
+df %>% count(temp)
 ```
 
 **Prompt (2–3 sentences):** Why did you choose this grouping variable? What scientific contrast are you testing?
 
-> *Write your answer here.*
+> *I'm doing "cold" and "warm" - when ambient temperature is < 40º F (~4.44 ºC) it's 'cold', and above this threshold it's 'warm'. I'm curious if GPP is lower on cooler days and higher on warmer days. It would probably be best to test temperature as a continuous variable, but I'm curious to see results.*
 
 ---
 
@@ -564,29 +568,44 @@ Repeat the workflow:
 4. run `t.test()`
 5. interpret
 
-```{r visualize_second_group, echo=TRUE, eval=FALSE}
+```{r visualize_second_group, echo=TRUE, eval=TRUE}
 # GOAL: visualize your response by your chosen grouping variable.
 
-___
+df %>% ggplot(aes(x = temp, y = gpp, fill = temp)) + 
+  geom_violin() + 
+  theme_bw()
+  
 ```
 
-```{r summarize_second_group, echo=TRUE, eval=FALSE}
+```{r summarize_second_group, echo=TRUE, eval=TRUE}
 # GOAL: summarize your response variable by your chosen grouping variable.
+group_summary <- df %>%
+  filter(!is.na(.data[[response_var]])) %>%
+  group_by(temp) %>%
+  summarise(
+    mean_response = mean(gpp),
+    sd_response = sd(gpp),
+    n = n(),
+    .groups = "drop"
+  )
 
-___
+group_summary
 ```
 
-```{r ttest_second_group, echo=TRUE, eval=FALSE}
+```{r ttest_second_group, echo=TRUE, eval=TRUE}
 # GOAL: run a two-sample t-test for your chosen grouping variable.
 
-___
+t.test(
+  gpp ~ temp,
+  data = df
+)
 ```
 
 **Prompt (5–6 sentences):** Compare the day/night t-test to your second grouping-variable test.  
 Which contrast was stronger? Which was more scientifically meaningful?  
 Did the two tests produce similar or different conclusions?
 
-> *Write your answer here.*
+> *Both the day/night and warm/cool tests have p values less than 2.2e-16. There's probably some correlation between these values that I didn't think of until now - it's usually colder at night and warmer during the day. The results I'm seeing from temperature could be caused by temporal differences or vice versa. The conclusions of the two tests are similar, likely because of this correlation. Neither of these results are super meaningful because the values are temporally autocorrelated - GPP is going to be low at night b/c there's no photosynthesis. *
 
 ---
 
@@ -598,7 +617,7 @@ Answer in **4–6 sentences**:
 - What changes when we move from “testing one mean” to “testing a difference in means”?
 - How did the bootstrap group-mean plot help your understanding?
 
-> *Write your answer here.*
+> *Both the two-sample t-test and one-mean hypothesis test seek to see how different two classes of values are. When we test one mean, we only have to consider one 'group' of data. When we test two groups of data, we have to consider differences in data structure. Otherwise, it's pretty similar - you're testing how different two values are. I'm a big fan of pairing visualizations with statistics and I believe there's (almost) always a benefit to having a visualization alongside a statistical output. The statistical output and the visualization are both saying the same thing but in two different ways, which enhances understanding. *
 
 ------------------------------------------------------------------------
 
