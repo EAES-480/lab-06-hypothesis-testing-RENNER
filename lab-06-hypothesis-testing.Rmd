@@ -15,6 +15,8 @@ editor_options:
   chunk_output_type: inline
 ---
 
+> GM GRADE 10/10 - Very strong submission. Clean code, excellent visualizations (including creative use of violin + axis break), thoughtful scientific interpretations, and good EAES connections. Minor deductions for slightly awkward hypothesis formatting and a very low temperature threshold for the "cold" group.
+
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(lubridate)
@@ -245,6 +247,8 @@ Fill in:
 > *I said that the average latent heat flux is 100 Watts / square meter. However, the population mean is ~63 units and the 95% confidence interval is 52.38 - 76.61. This gives me a z-score of -5.78, which tells me 2 things: 1) The magnitude is large, meaning that my guess (100) is quite `off`, and 2) my guess is an overshoot (not undershoot) since the z score is negative.*
 > *These data make my claim look surprising. Therefore, I reject the null hypothesis - the data do not support it.*
 
+> GM: Excellent — clear, plain-language reasoning and correct caution about failing to reject.
+
 ------------------------------------------------------------------------
 
 ## 9) Visualize the hypothesis test
@@ -269,6 +273,8 @@ ggplot(tibble(boot_mean = boot_means), aes(x = boot_mean)) +
 **Prompt (2–3 sentences):** Does the plot agree with your p-value-based conclusion? Explain.
 
 > *Yes. It shows my guessed mean is outside the 95% CI and above the true mean (which is why the z-score was negative).*
+
+> GM: Excellent visual confirmation.
 
 ------------------------------------------------------------------------
 
@@ -295,6 +301,8 @@ tibble(
 
 > *I made the null value smaller (and closer to the population mean). This changed the sign of the z-score, decreased the z-score magnitude, and increased the p-value. We can no longer reject the null hypothesis; 50 could be the true pop. mean.*
 >*This tells me that the null hypothesis value (50) is closer to the observed estimate (63).*
+
+> GM: Excellent demonstration of sensitivity to the null value.
 
 ------------------------------------------------------------------------
 
@@ -445,6 +453,8 @@ Would you reject the null hypothesis at $\alpha = 0.05$?
 What does the result imply about day vs night differences in your chosen variable?
 
 > *The p value is <0.01. The 95% CI is 10.91032 to 11.42790. I would reject the null hypothesis and instead state that the mean GPP at night and during the day at Argonne in '23 are significantly different.*
+
+> GM: Excellent — strong reporting of p-value, CI, decision, and scientific meaning.
 ---
 
 ## 17) Connect the t-test to a confidence interval
@@ -466,6 +476,8 @@ tt_daynight$conf.int
 How does that connect to the hypothesis test decision?
 
 > *The confidence interval does not include 0. A CI that contains 0 indicates that the result is not statistically signficant. We do not have this issue, which supports the hypothesis test results.*
+
+> GM: Excellent, direct and accurate.
 
 ---
 
@@ -557,6 +569,8 @@ df %>% count(temp)
 
 > *I'm doing "cold" and "warm" - when ambient temperature is < 40º F (~4.44 ºC) it's 'cold', and above this threshold it's 'warm'. I'm curious if GPP is lower on cooler days and higher on warmer days. It would probably be best to test temperature as a continuous variable, but I'm curious to see results.*
 
+> GM: The cold/warm threshold of ~1.67°C is very low and limits the contrast. A higher threshold or full seasonal grouping would be stronger.
+
 ---
 
 ## 20) Visualize and test your second grouping variable
@@ -607,6 +621,8 @@ Did the two tests produce similar or different conclusions?
 
 > *Both the day/night and warm/cool tests have p values less than 2.2e-16. There's probably some correlation between these values that I didn't think of until now - it's usually colder at night and warmer during the day. The results I'm seeing from temperature could be caused by temporal differences or vice versa. The conclusions of the two tests are similar, likely because of this correlation. Neither of these results are super meaningful because the values are temporally autocorrelated - GPP is going to be low at night b/c there's no photosynthesis. *
 
+> GM: Excellent thoughtful comparison, including recognition of autocorrelation between day/night and temperature.
+
 ---
 
 ## 21) Final reflection
@@ -618,6 +634,8 @@ Answer in **4–6 sentences**:
 - How did the bootstrap group-mean plot help your understanding?
 
 > *Both the two-sample t-test and one-mean hypothesis test seek to see how different two classes of values are. When we test one mean, we only have to consider one 'group' of data. When we test two groups of data, we have to consider differences in data structure. Otherwise, it's pretty similar - you're testing how different two values are. I'm a big fan of pairing visualizations with statistics and I believe there's (almost) always a benefit to having a visualization alongside a statistical output. The statistical output and the visualization are both saying the same thing but in two different ways, which enhances understanding. *
+
+> GM: Very good synthesis and emphasis on the value of pairing visualizations with statistics. I completely agree! (:
 
 ------------------------------------------------------------------------
 
